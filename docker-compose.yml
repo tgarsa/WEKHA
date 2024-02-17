@@ -1,0 +1,30 @@
+version: '2'
+services:
+
+  webapp:
+    build: api
+    hostname: api
+    container_name: api
+    volumes:
+      - ./api/:/app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres-db
+
+  postgres-db:
+    build: database
+    hostname: database
+    container_name: database
+    environment:
+      POSTGRES_DB: wehka
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: lop34sw@D
+    volumes:
+      - ./database/:/app
+      - ./data:/var/lib/postgresql/data/wehka
+    ports:
+      - "5432:5432"
+    restart: always
+
+
