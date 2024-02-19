@@ -1,4 +1,4 @@
-FROM postgres:16.2-bullseye
+FROM postgres:bullseye
 
 LABEL authors="TGARSA"
 LABEL description="PostgreSQL Image for demo"
