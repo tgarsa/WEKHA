@@ -88,10 +88,10 @@ CREATE TABLE jugadores_campeonato (
        acc_penal INTEGER NOT NULL,
        acc_desem INTEGER NOT NULL,
        puesto INTEGER NOT NULL
-)
+);
 
-DROP TABLE IF EXISTS jugadores_PRUEBSA;
-CREATE TABLE jugadores_campeonato (
+DROP TABLE IF EXISTS jugadores_pruebas;
+CREATE TABLE jugadores_pruebas (
        id SERIAL PRIMARY KEY,
        id_jugador VARCHAR NOT NULL,
        id_campeonato VARCHAR NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE jugadores_campeonato (
        resultado VARCHAR NOT NULL,
        penal INTEGER NOT NULL,
        desem INTEGER NOT NULL
-)
+);
 
 -- CREATE TABLES Sedes
 
