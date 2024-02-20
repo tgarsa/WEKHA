@@ -1,6 +1,17 @@
 version: '3.8'
 services:
 
+  access-api:
+    build: database-access-api
+    hostname: database-access-api
+    container_name: database-access-api
+    volumes:
+      - ./access-api/:/app # Necesito buscar esto para saber como hacerlo.
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres-db
+
   postgres-db:
     build: database
     hostname: database
@@ -10,9 +21,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: lop34sw@D
     volumes:
+      # - ./database/:/app # No lo tengo y parece que funciona perfectamente.
       - ./data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    restart: always
+    restart: always # Para mantener el sistema activo. Creo que no es necesario
 
 
