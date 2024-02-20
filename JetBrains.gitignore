@@ -83,3 +83,5 @@ fabric.properties
 
 # MacOSX
 .DS_Store
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/inspectionProfiles/Project_Default.xml
