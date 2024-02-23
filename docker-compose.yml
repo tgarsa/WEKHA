@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: lop34sw@D
     volumes:
-      - ./data:/var/lib/postgresql/data/wehka
+      - ./data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: always
