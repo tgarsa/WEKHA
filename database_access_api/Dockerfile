@@ -1,6 +1,6 @@
 FROM tiangolo/uvicorn-gunicorn:python3.9
 
-WORKDIR /app 
+WORKDIR /database-access-api
 ENV DEBIAN_FRONTEND=noninteractive
 ENV MODULE_NAME=app
 
