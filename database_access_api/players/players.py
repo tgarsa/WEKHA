@@ -1,16 +1,15 @@
+# Access to the Library
+from utils import database, network
 
 # Access to the PostgreSQL database
-
 import psycopg2
 import numpy as np
 from pandas import notnull
 from psycopg2.extensions import register_adapter, AsIs
 register_adapter(np.int64, AsIs)
 
-from database_access_api.utils import network, database
-
 conexion = psycopg2.connect(
-    host= network.ip,
+    host=network.ip,
     port=5432,
     database=database.database,
     user=database.user,

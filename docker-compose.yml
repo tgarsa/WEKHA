@@ -6,7 +6,7 @@ services:
     hostname: database_access_api
     container_name: database_access_api
     volumes:
-      - ./access-api/:/app # Necesito buscar esto para saber como hacerlo.
+      - ./database_access_api/:/app
     ports:
       - "5000:5000"
     depends_on:
