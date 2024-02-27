@@ -28,5 +28,5 @@ app = FastAPI(title="Database Access",
 @app.post('/new_player', tags=["LoadPlayers"])
 async def new_player(incoming_data: Input):
     df = read_json(incoming_data.df_json)
-    result = players.players.set(df)
+    result = players.players.add(df)
     return result

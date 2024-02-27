@@ -16,16 +16,8 @@ conexion = psycopg2.connect(
     password=database.password
 )
 
-# conexion = psycopg2.connect(
-#     host="192.168.178.36",
-#     port=5432,
-#     database='wehka',
-#     user='postgres',
-#     password='lop34sw@D'
-# )
 
-
-def set(player):
+def add(player):
     '''
     We save the data of the player in to the database.
     In this case only one player.
@@ -50,8 +42,5 @@ def set(player):
                              data['email'], data['telefono'], data['residencia'], data['talla'], data['discapacidades'],
                              data['observaciones']))
         conexion.commit()
-
-    cursor.close()
-    conexion.close()
 
     return {"label": 'It done'}
