@@ -3,10 +3,10 @@ from utils import database, network
 
 # Access to the PostgreSQL database
 import psycopg2
-import numpy as np
-from pandas import notnull
+from numpy import int64
+
 from psycopg2.extensions import register_adapter, AsIs
-register_adapter(np.int64, AsIs)
+register_adapter(int64, AsIs)
 
 conexion = psycopg2.connect(
     host=network.ip,
@@ -16,8 +16,16 @@ conexion = psycopg2.connect(
     password=database.password
 )
 
+# conexion = psycopg2.connect(
+#     host="192.168.178.36",
+#     port=5432,
+#     database='wehka',
+#     user='postgres',
+#     password='lop34sw@D'
+# )
 
-def _set(player):
+
+def set(player):
     '''
     We save the data of the player in to the database.
     In this case only one player.
@@ -30,19 +38,20 @@ def _set(player):
     cursor = conexion.cursor()
 
     # Define SQL to insert the data.
-    sql = "INSERT INTO jugadores (id_jugador, dni, nombre, apellidos, nick, email, telefono, talla, discapacidades, "\
-          "observaciones) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    sql = "INSERT INTO jugadores (id_jugador, dni, nombre, apellidos, nick, email, telefono, residencia, talla, "\
+          "discapacidades, observaciones) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
-    # To don't have a problem if observaciones in empty
-    if notnull(player['observaciones']):
-        observaciones = player['observaciones']
-    else:
-        observaciones = ""
+    for cont in range(player.shape[0]):
+        data = player.iloc[cont]
+        print(data)
+        print(cont)
+        print(player.shape[0])
+        cursor.execute(sql, (data['id_jugador'], data['dni'], data['nombre'], data['apellidos'], data['nick'],
+                             data['email'], data['telefono'], data['residencia'], data['talla'], data['discapacidades'],
+                             data['observaciones']))
+        conexion.commit()
 
-    id_jugador = 'PEPOTE'
+    cursor.close()
+    conexion.close()
 
-    cursor.execute(sql, (id_jugador, player['dni'], player['nombre'], player['apellidos'], player['nick'],
-                         player['email'], player['telefono'], player['talla'], player['discapacidades'], observaciones))
-
-    conexion.commit()
     return {"label": 'It done'}
