@@ -11,6 +11,7 @@ services:
       - "5000:5000"
     depends_on:
       - postgres-db
+    restart: always
 
   postgres-db:
     build: database
