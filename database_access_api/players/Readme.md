@@ -16,7 +16,7 @@ The tables that will use these methods are:
 * build_id: Build a unique ID to identified at each player.
 
 ### Jugadores
-* set: To add a new player, after to build its id.
+* add: To add a new player, after to build its id.
 * get_id: To download the data of a player using its ID. 
 * get_phone: To download the data of a player using its phone number.
 * get_email: To download the data of a player using its email.

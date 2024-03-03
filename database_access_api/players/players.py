@@ -90,7 +90,9 @@ def add(player):
         # Build the new_id.
         new_id = _new_id(data['nombre'], data['apellidos'])
         # To ensure we don't have problems with the spelling of the email, we lower it.
-        data['email'] = data['email'].lower().copy()
+        data['email'] = data['email'].lower()
+        data['nombre'] = ' '.join(it.capitalize() for it in data['nombre'].split(' '))
+        data['apellidos'] = ' '.join(it.capitalize() for it in data['apellidos'].split(' '))
         invalid_data_text = _invalid_data(dni=data['dni'], email=data['email'], telefono=data['telefono'])
         if pd.isnull(invalid_data_text):
             cursor.execute(sql, (new_id, data['dni'], data['nombre'], data['apellidos'], data['nick'],
@@ -102,4 +104,94 @@ def add(player):
             exit_text = {"label": f'Los campos {invalid_data_text} tienen valores previamente almacenados.'}
 
     return exit_text
+
+
+def get(df):
+    '''
+    Download the data of a player looking for the features passed in the KWARGS.
+    :param df: Set of features that we will use to download the data.
+    :return: The data of a player.
+    '''
+
+    # Build the string with the fields and values
+    # parameter  = ''
+    # for count, column in enumerate(df.columns):
+    #     if count > 0:
+    #         parameter += ' and'
+    #     parameter += f" {column} = '{df.iloc[0][column]}'"
+    #
+    # print(parameter)
+
+    # print('Paso 2-1')
+    # Start the connection.
+    cursor = connection.cursor()
+    # Start to build the SQL
+    sql = "select * from jugadores where"
+    # for cont, i in enumerate(kwargs.items()):
+    #     print(f"{cont}: {i[0]} -- {i[1]}")
+    #     # Add to the SQL the conditions.
+    #     if cont > 0:
+    #         sql += " and"
+    #     sql += f" {i[0]} LIKE '{i[1]}'"
+
+    for count, column in enumerate(df.columns):
+        if count > 0:
+            sql += ' and'
+        if column == "email":
+            sql += f" {column} = '{df.iloc[0][column].lower()}'"
+        else:
+            sql += f" {column} = '{df.iloc[0][column]}'"
+
+    cursor.execute(sql)
+    # Download the data
+    data = cursor.fetchall()
+    # Close the connection
+    cursor.close()
+    print('DATA: {}'.format(data))
+    return data
+
+
+def update(df):
+    '''
+    This function update the data contained into the database using the 'id_jugador' as key.
+    :param df: This will contain the 'id_jugador' to know which player we will to modify and the rest of the fields will
+     contain the new data.
+    :return: None.
+    '''
+
+    columns = list(df)
+    print(f'Fase 1: {columns}')
+    columns.remove('id_jugador')
+    print(f'Fase 2: {columns}')
+
+    sql = 'UPDATE jugadores set'
+
+    for count, column in enumerate(columns):
+        if count > 0:
+            sql += ' and'
+        if column == 'email':
+            sql += f" {column} = '{df.iloc[0][column].lower()}'"
+        else:
+            sql += f" {column} = '{df.iloc[0][column]}'"
+    print('Fase 3')
+    sql += f" where id_jugador = '{df.iloc[0]['id_jugador']}'"
+    print('Fase 4')
+    print(sql)
+
+    # Build the connection
+    # Start the cursor.
+    cursor = connection.cursor()
+    # Execute SQL
+    cursor.execute(sql)
+    # Save the data
+    connection.commit()
+    # Close the cursor
+    cursor.close()
+
+
+    return {"label": 'It done'}
+
+
+
+
 

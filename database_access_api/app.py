@@ -11,6 +11,7 @@ register_adapter(np.int64, AsIs)
 
 
 # To be sure that the customer send the data in teh correct format.
+# I will need to add more styles.
 class Input(BaseModel):
     df_json: str
 
@@ -29,4 +30,18 @@ app = FastAPI(title="Database Access",
 async def new_player(incoming_data: Input):
     df = read_json(incoming_data.df_json)
     result = players.players.add(df)
+    return result
+
+
+@app.post('/update_player', tags=["UpdatePlayer"])
+async def update_player(incoming_data: Input):
+    df = read_json(incoming_data.df_json)
+    result = players.players.update(df)
+    return result
+
+
+@app.get('/get_player', tags=["GetPlayer"])
+async def get_player(incoming_data: Input):
+    df = read_json(incoming_data.df_json)
+    result = players.players.get(df)
     return result
