@@ -160,23 +160,18 @@ def update(df):
     '''
 
     columns = list(df)
-    print(f'Fase 1: {columns}')
     columns.remove('id_jugador')
-    print(f'Fase 2: {columns}')
 
-    sql = 'UPDATE jugadores set'
+    sql = 'UPDATE jugadores SET'
 
     for count, column in enumerate(columns):
         if count > 0:
-            sql += ' and'
+            sql += ','
         if column == 'email':
             sql += f" {column} = '{df.iloc[0][column].lower()}'"
         else:
             sql += f" {column} = '{df.iloc[0][column]}'"
-    print('Fase 3')
-    sql += f" where id_jugador = '{df.iloc[0]['id_jugador']}'"
-    print('Fase 4')
-    print(sql)
+    sql += f" WHERE id_jugador = '{df.iloc[0]['id_jugador']}'"
 
     # Build the connection
     # Start the cursor.
@@ -187,7 +182,6 @@ def update(df):
     connection.commit()
     # Close the cursor
     cursor.close()
-
 
     return {"label": 'It done'}
 
