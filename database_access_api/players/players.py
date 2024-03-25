@@ -93,7 +93,7 @@ def _add_broze_player(cursor, data):
                                 data['created_at'])
                    )
     # connection.commit()
-    return "Bronze Layer: OK."
+    return "Bronze Layer: OK. "
 
 
 def _add_player(cursor, data):
@@ -114,7 +114,7 @@ def _add_player(cursor, data):
                                 data['created_at'], data['created_at'])
                    )
     # connection.commit()
-    return "Silver Layer: OK."
+    return "Silver Layer: OK. "
 
 
 def add(player):
