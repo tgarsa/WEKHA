@@ -27,7 +27,7 @@ def _numerize(string):
     :return: A new string without letters or punctuation.
     '''
     from re import sub
-    return sub(r'[^1-9]', '', str(string))
+    return sub(r'[^0-9]', '', str(string))
 
 
 # Function to normalize the data
