@@ -75,7 +75,7 @@ def _invalid_data(**kwargs):
     return return_text[:-2]
 
 
-def _add_broze_player(cursor, data):
+def _add_bronze_player(cursor, data):
     '''
     We saved here the data. Don't do anymore.
     :param cursor: The cursor to access to the database
@@ -122,9 +122,11 @@ def add(player):
     We add the data of the player, only one player, into the database.
     First in the Bronze layer, and after to normalize into the Silver layer.
     :param player: DataFrame with the player's data.
-    :return: none.
+    :return: Explanatory text.
     '''
 
+    # Exit text
+    exit_text = ''
     # Access to the database
     cursor = connection.cursor()
 
@@ -140,13 +142,12 @@ def add(player):
                                           email=data_norm['email'],
                                           telefono=data_norm['telefono'])
         if invalid_data_text == "":
-            exit_text = _add_broze_player(cursor, data)
+            exit_text = _add_bronze_player(cursor, data)
             exit_text += _add_player(cursor, data_norm)
             exit_text = {"label": exit_text}
             connection.commit()
         else:
             exit_text = {"label": f'Los campos {invalid_data_text} tienen valores previamente almacenados.'}
-
 
     return exit_text
 
@@ -158,26 +159,10 @@ def get(df):
     :return: The data of a player.
     '''
 
-    # Build the string with the fields and values
-    # parameter  = ''
-    # for count, column in enumerate(df.columns):
-    #     if count > 0:
-    #         parameter += ' and'
-    #     parameter += f" {column} = '{df.iloc[0][column]}'"
-    #
-    # print(parameter)
-
-    # print('Paso 2-1')
     # Start the connection.
     cursor = connection.cursor()
     # Start to build the SQL
     sql = "select * from jugadores where"
-    # for cont, i in enumerate(kwargs.items()):
-    #     print(f"{cont}: {i[0]} -- {i[1]}")
-    #     # Add to the SQL the conditions.
-    #     if cont > 0:
-    #         sql += " and"
-    #     sql += f" {i[0]} LIKE '{i[1]}'"
 
     for count, column in enumerate(df.columns):
         if count > 0:
@@ -229,8 +214,3 @@ def update(df):
     cursor.close()
 
     return {"label": 'It done'}
-
-
-
-
-
