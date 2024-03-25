@@ -135,11 +135,16 @@ def add(player):
         data['id_jugador'] = _new_id(data['nombre'], data['apellidos'])
         # Catch the time
         data['created_at'] = time.now()
-        data_norm = normalize(data)
+        data_norm = data
+        print('Iguales 1: {}'.format(data == data_norm))
+        data_norm = data.copy()
+        print('Iguales 2: {}'.format(data == data_norm))
+        data_norm = normalize(data_norm)
+        print('Iguales 3: {}'.format(data == data_norm))
         invalid_data_text = _invalid_data(dni=data_norm['dni'],
                                           email=data_norm['email'],
                                           telefono=data_norm['telefono'])
-        if invalid_data_text=="":
+        if invalid_data_text == "":
             _ = _add_broze_player(cursor, data)
             exit_text = _add_player(cursor, data)
             connection.commit()

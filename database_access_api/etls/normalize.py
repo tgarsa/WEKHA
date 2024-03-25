@@ -46,5 +46,5 @@ def normalize(df):
         elif key in ['email']:
             df[key] = df[key].lower()
 
-    return df.copy()
+    return df
 
