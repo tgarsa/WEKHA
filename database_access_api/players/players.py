@@ -180,18 +180,17 @@ def get(df):
     print('DATA: {}'.format(data))
     return data
 
-
-def update(df):
+def _update_player(cursor, df):
     '''
-    This function update the data contained into the database using the 'id_jugador' as key.
-    :param df: This will contain the 'id_jugador' to know which player we will to modify and the rest of the fields will
-     contain the new data.
-    :return: None.
+    Here, we uopdte the data into the silver layer
+    :param cursor: Connection to the database
+    :param df: Data tu update, + player ID
+    :return: Explanatory text.
     '''
 
     columns = list(df)
     columns.remove('id_jugador')
-
+    # Building the sql to update the data in the Silver Layer.
     sql = 'UPDATE jugadores SET'
 
     for count, column in enumerate(columns):
@@ -203,14 +202,52 @@ def update(df):
             sql += f" {column} = '{df.iloc[0][column]}'"
     sql += f" WHERE id_jugador = '{df.iloc[0]['id_jugador']}'"
 
-    # Build the connection
-    # Start the cursor.
-    cursor = connection.cursor()
     # Execute SQL
     cursor.execute(sql)
-    # Save the data
-    connection.commit()
+
+    return {"label": 'It done'}
+
+
+
+def update(df):
+    '''
+    This function update the data contained into the database using the 'id_jugador' as key.
+    :param df: This will contain the 'id_jugador' to know which player we will to modify and the rest of the fields will
+     contain the new data.
+    :return: Explanatory text.
+    '''
+
+    columns = list(df)
+    # Start the cursor.
+    cursor = connection.cursor()
+
+    # First add the timestamp to the DF.
+    df['created_at'] = time.now()
+    data_norm = normalize(df.copy())
+    invalid_data_text = ''
+    if 'dni' in columns:
+        invalid_data_text += _invalid_data(dni=data_norm['dni'])
+    if 'email' in columns:
+        if invalid_data_text != '':
+            invalid_data_text += ', '
+        invalid_data_text += _invalid_data(dni=data_norm['email'])
+    if 'telefono' in columns:
+        if invalid_data_text != '':
+            invalid_data_text += ', '
+        invalid_data_text += _invalid_data(dni=data_norm['telefono'])
+
+    if invalid_data_text == "":
+        # SAve the data to update in the bronze layer
+        exit_text = _add_bronze_player(cursor, df)
+        # Update the data in the silver layer
+        exit_text += _update_player(cursor, data_norm)
+        exit_text = {"label": exit_text}
+        # Commit the data
+        connection.commit()
+    else:
+        exit_text = {"label": f'Los campos {invalid_data_text} tienen valores previamente almacenados.'}
+
     # Close the cursor
     cursor.close()
 
-    return {"label": 'It done'}
+    return exit_text
