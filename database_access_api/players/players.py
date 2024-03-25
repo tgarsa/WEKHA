@@ -135,12 +135,9 @@ def add(player):
         data['id_jugador'] = _new_id(data['nombre'], data['apellidos'])
         # Catch the time
         data['created_at'] = time.now()
-        data_norm = data
-        print('Iguales 1: {}'.format(data == data_norm))
-        data_norm = data.copy()
-        print('Iguales 2: {}'.format(data == data_norm))
-        data_norm = normalize(data_norm)
-        print('Iguales 3: {}'.format(data == data_norm))
+        # data_norm = data.copy()
+        # data_norm = normalize(data_norm)
+        data_norm = normalize(data.copy())
         invalid_data_text = _invalid_data(dni=data_norm['dni'],
                                           email=data_norm['email'],
                                           telefono=data_norm['telefono'])
