@@ -93,7 +93,7 @@ def _add_broze_player(cursor, data):
                                 data['created_at'])
                    )
     # connection.commit()
-    return {"label": 'It done'}
+    return "Bronze Layer: OK."
 
 
 def _add_player(cursor, data):
@@ -114,7 +114,7 @@ def _add_player(cursor, data):
                                 data['created_at'], data['created_at'])
                    )
     # connection.commit()
-    return {"label": 'It done'}
+    return "Silver Layer: OK."
 
 
 def add(player):
@@ -140,8 +140,9 @@ def add(player):
                                           email=data_norm['email'],
                                           telefono=data_norm['telefono'])
         if invalid_data_text == "":
-            _ = _add_broze_player(cursor, data)
-            exit_text = _add_player(cursor, data_norm)
+            exit_text = _add_broze_player(cursor, data)
+            exit_text += _add_player(cursor, data_norm)
+            exit_text = {"label": exit_text}
             connection.commit()
         else:
             exit_text = {"label": f'Los campos {invalid_data_text} tienen valores previamente almacenados.'}
