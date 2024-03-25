@@ -63,6 +63,24 @@ CREATE TABLE pruebas (
 
 -- CREATE TABLES Jugadores
 
+DROP TABLE IF EXISTS jugadores_bronze;
+CREATE TABLE jugadores_bronze (
+       id SERIAL PRIMARY KEY,
+       id_jugador VARCHAR NOT NULL,
+       dni VARCHAR,
+       nombre VARCHAR,
+       apellidos VARCHAR,
+       nick VARCHAR,
+       email VARCHAR,
+       telefono VARCHAR,
+       residencia VARCHAR,
+       pais VARCHAR,
+       talla VARCHAR,
+       discapacidades VARCHAR,
+       observaciones VARCHAR,
+       created_at TIMESTAMP NOT NULL
+);
+
 DROP TABLE IF EXISTS jugadores;
 CREATE TABLE jugadores (
        id SERIAL PRIMARY KEY,
@@ -74,9 +92,12 @@ CREATE TABLE jugadores (
        email VARCHAR NOT NULL,
        telefono VARCHAR NOT NULL,
        residencia VARCHAR NOT NULL,
+       pais VARCHAR NOT NULL,
        talla VARCHAR NOT NULL,
        discapacidades VARCHAR NOT NULL,
-       observaciones VARCHAR NOT NULL
+       observaciones VARCHAR,
+       created_at TIMESTAMP NOT NULL,
+       updated_at TIMESTAMP NOT NULL
 );
 
 

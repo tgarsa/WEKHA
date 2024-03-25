@@ -1,10 +1,12 @@
+# In this package, we only define the end points.
+
 import numpy as np
 from fastapi import FastAPI
 from pydantic import BaseModel
 from pandas import read_json
 
 # importing the methods to communicate with the database
-import players.players
+import players.players as players
 
 from psycopg2.extensions import register_adapter, AsIs
 register_adapter(np.int64, AsIs)
@@ -29,19 +31,19 @@ app = FastAPI(title="Database Access",
 @app.post('/new_player', tags=["LoadPlayers"])
 async def new_player(incoming_data: Input):
     df = read_json(incoming_data.df_json)
-    result = players.players.add(df)
+    result = players.add(df)
     return result
 
 
 @app.post('/update_player', tags=["UpdatePlayer"])
 async def update_player(incoming_data: Input):
     df = read_json(incoming_data.df_json)
-    result = players.players.update(df)
+    result = players.update(df)
     return result
 
 
 @app.get('/get_player', tags=["GetPlayer"])
 async def get_player(incoming_data: Input):
     df = read_json(incoming_data.df_json)
-    result = players.players.get(df)
+    result = players.get(df)
     return result

@@ -13,21 +13,18 @@ The tables that will use these methods are:
 
 ## The package has the next methods.
 ### Generic
-* build_id: Build a unique ID to identified at each player.
+* _new_id: Build a unique ID to identified at each player, use the name and surname. 
+* _invalid_data: To test if some data are previous loaded into the data base.
+* _locate_id: to be sure that we have a different player ID, we count how many players
+have the same letters in their id_player.
 
 ### Jugadores
 * add: To add a new player, after to build its id.
-* get_id: To download the data of a player using its ID. 
-* get_phone: To download the data of a player using its phone number.
-* get_email: To download the data of a player using its email.
-* get_dni: To download the data of a player using its DNI.
-* get_name: To download the data of a player using its name.
-* get_id_list:  To download a list of IDs to build a correct ID. 
-* update_email: To update the email of the player.
-* update_phone: To update the phone of the player.
-* update_nick: To update the nick of the player.
-* update_talla: To update the size of the player.
-* update_discapacidades: To update the dis-capacities of the player.
-* update_observations, add_observations: To update the notes of the players. 
-
+* get: To recover a player using any of the uniques datas
+  * email
+  * phone
+  * dni
+  * id_player
+* update: To update a field of a player, we will use the id_player to locate the player. We can update more than one 
+fields at the same time.
 

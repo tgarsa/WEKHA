@@ -1,16 +1,17 @@
 # Access to our how Library
-# todo: Look for an alternative import to won't see this error.
-import pandas as pd
-from utils import database, network
+# TODO: Look for an alternative import to won't see this error.
+from utils import database, network, time
+from etls.normalize import normalize
 
-# Access to the PostgreSQL database
+# Access to the Postgres database
 import psycopg2
 from numpy import int64
 # from psycopg2.extensions import register_adapter, AsIs
 psycopg2.extensions.register_adapter(int64, psycopg2.extensions.AsIs)
 
 # Define the connection
-# We won't close because we will need to continued using.
+# We won't close the connection; we will continue using.
+# Build the connection from the adequate data.
 connection = psycopg2.connect(
     host=network.ip,
     port=5432,
@@ -24,6 +25,7 @@ def _locate_id(id):
     '''
     Look for possible IDs that start with the same letters. After we will count how many possible duplicates to sum one
     and add in the three-number format to the ID.
+    We look for the ID into the silver layer, players table.
     :param id: The letters of the ID, from the name and surname.
     :return: The number of possible duplicates.
     '''
@@ -41,14 +43,14 @@ def _new_id(nombre, apellidos):
     Based in the name and the surname, and looking for posible repetition in the database
     :param nombre:
     :param apellidos:
-    :return: A string in which the letters are the first letter of each name and surname, and in addition a number to be
-     sure that we don't have duplicate IDs
+    :return: A string in which the letters are the first letter of each name and surname, in upper case, and added a
+            number to ensure that we don't have duplicate IDs
     '''
     new_id = ''
     for name in nombre.split(' '):
-        new_id += name[:1]
+        new_id += name[:1].upper()
     for surname in apellidos.split(' '):
-        new_id += surname[:1]
+        new_id += surname[:1].upper()
     new_id += f'{_locate_id(new_id) + 1:03d}'
     return new_id
 
@@ -63,45 +65,87 @@ def _invalid_data(**kwargs):
     return_text = ''
     for i in kwargs.items():
         sql = f"select {i[0]} from jugadores where {i[0]} LIKE '{i[1]}'"
+        print(sql)
         cursor.execute(sql)
         if cursor.rowcount > 0:
             return_text += f'{i[0]}, '
+            print('Esta: {}'.format(i[0]))
     cursor.close()
+    print('Return :"{}"'.format(return_text[:-2]))
     return return_text[:-2]
+
+
+def _add_broze_player(cursor, data):
+    '''
+    We saved here the data. Don't do anymore.
+    :param cursor: The cursor to access to the database
+    :param data: The dataframe with the whole of the data
+    :return: Verification text.
+    '''
+
+    # SQL to write into the bronze layer
+    sql_bronze = ("INSERT INTO jugadores_bronze (id_jugador, dni, nombre, apellidos, nick, email, telefono, "
+                  "residencia, pais, talla, discapacidades, observaciones, created_at) "
+                  "values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+    cursor.execute(sql_bronze, (data['id_jugador'], data['dni'], data['nombre'], data['apellidos'],
+                                data['nick'], data['email'], data['telefono'], data['residencia'],
+                                data['pais'], data['talla'], data['discapacidades'], data['observaciones'],
+                                data['created_at'])
+                   )
+    # connection.commit()
+    return {"label": 'It done'}
+
+
+def _add_player(cursor, data):
+    '''
+    We saved here the data. Don't do anymore.
+    :param cursor: The cursor to access to the database
+    :param data: The dataframe with the whole of the data
+    :return: Verification text.
+    '''
+
+    # SQL to write into the bronze layer
+    sql_silver = ("INSERT INTO jugadores (id_jugador, dni, nombre, apellidos, nick, email, telefono, "
+                  "residencia, pais, talla, discapacidades, observaciones, created_at, updated_at) "
+                  "values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+    cursor.execute(sql_silver, (data['id_jugador'], data['dni'], data['nombre'], data['apellidos'],
+                                data['nick'], data['email'], data['telefono'], data['residencia'],
+                                data['pais'], data['talla'], data['discapacidades'], data['observaciones'],
+                                data['created_at'], data['created_at'])
+                   )
+    # connection.commit()
+    return {"label": 'It done'}
 
 
 def add(player):
     '''
-    We add the data of the player in to the database.
-    In this case only one player.
-    This is a first approach, I will need to define the function to build the ID
-    :param player: DataFrame with the data of the player.
+    We add the data of the player, only one player, into the database.
+    First in the Bronze layer, and after to normalize into the Silver layer.
+    :param player: DataFrame with the player's data.
     :return: none.
     '''
 
     # Access to the database
     cursor = connection.cursor()
-    # Define SQL to insert the data.
-    sql = "INSERT INTO jugadores (id_jugador, dni, nombre, apellidos, nick, email, telefono, residencia, talla, "\
-          "discapacidades, observaciones) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
     for cont in range(player.shape[0]):
         data = player.iloc[cont]
+        # Now, we build the internal data, "id_player", and "created_at"
         # Build the new_id.
-        new_id = _new_id(data['nombre'], data['apellidos'])
-        # To ensure we don't have problems with the spelling of the email, we lower it.
-        data['email'] = data['email'].lower()
-        data['nombre'] = ' '.join(it.capitalize() for it in data['nombre'].split(' '))
-        data['apellidos'] = ' '.join(it.capitalize() for it in data['apellidos'].split(' '))
-        invalid_data_text = _invalid_data(dni=data['dni'], email=data['email'], telefono=data['telefono'])
-        if pd.isnull(invalid_data_text):
-            cursor.execute(sql, (new_id, data['dni'], data['nombre'], data['apellidos'], data['nick'],
-                                 data['email'], data['telefono'], data['residencia'], data['talla'],
-                                 data['discapacidades'], data['observaciones']))
+        data['id_jugador'] = _new_id(data['nombre'], data['apellidos'])
+        # Catch the time
+        data['created_at'] = time.now()
+        data_norm = normalize(data)
+        invalid_data_text = _invalid_data(dni=data_norm['dni'],
+                                          email=data_norm['email'],
+                                          telefono=data_norm['telefono'])
+        if invalid_data_text=="":
+            _ = _add_broze_player(cursor, data)
+            exit_text = _add_player(cursor, data)
             connection.commit()
-            exit_text = {"label": 'It done'}
         else:
             exit_text = {"label": f'Los campos {invalid_data_text} tienen valores previamente almacenados.'}
+
 
     return exit_text
 
