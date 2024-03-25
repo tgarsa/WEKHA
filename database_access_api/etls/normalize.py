@@ -9,7 +9,8 @@ def _capitalize(input):
     '''
     # Set of prepositions to don't need to capitalize.
     replace_text = {'Del': 'del',
-                    'De': 'de'
+                    'De': 'de',
+                    'La': 'la'
                     }
 
     string = ' '.join(it.capitalize() for it in input.split(' '))
