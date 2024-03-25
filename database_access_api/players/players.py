@@ -146,7 +146,7 @@ def add(player):
                                           telefono=data_norm['telefono'])
         if invalid_data_text == "":
             _ = _add_broze_player(cursor, data)
-            exit_text = _add_player(cursor, data)
+            exit_text = _add_player(cursor, data_norm)
             connection.commit()
         else:
             exit_text = {"label": f'Los campos {invalid_data_text} tienen valores previamente almacenados.'}
