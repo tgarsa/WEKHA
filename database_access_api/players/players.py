@@ -205,7 +205,7 @@ def _update_player(cursor, df):
     # Execute SQL
     cursor.execute(sql)
 
-    return {"label": 'It done'}
+    return "Silver Layer: OK. "
 
 
 
