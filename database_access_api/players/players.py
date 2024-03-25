@@ -196,11 +196,11 @@ def _update_player(cursor, df):
     for count, column in enumerate(columns):
         if count > 0:
             sql += ','
-        if column == 'email':
-            sql += f" {column} = '{df.iloc[0][column].lower()}'"
+        if column == 'created_at':
+            sql += f" 'updated_at' = '{df[column]}'"
         else:
-            sql += f" {column} = '{df.iloc[0][column]}'"
-    sql += f" WHERE id_jugador = '{df.iloc[0]['id_jugador']}'"
+            sql += f" {column} = '{df[column]}'"
+    sql += f" WHERE id_jugador = '{df['id_jugador']}'"
 
     # Execute SQL
     cursor.execute(sql)
