@@ -42,9 +42,7 @@ def normalize(df):
             df[key] = _capitalize(df[key])
         elif key in ['dni', 'telefono']:
             df[key] = _numerize(df[key])
-            print(df[key])
         elif key in ['email']:
             df[key] = df[key].lower()
-
     return df
 
