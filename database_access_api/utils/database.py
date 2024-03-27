@@ -8,8 +8,8 @@ psycopg2.extensions.register_adapter(int64, psycopg2.extensions.AsIs)
 
 # TODO: Move to an .env file.
 # The connexion parameters
-database = 'wehka'
-user = 'postgres'
+database = 'wekha'
+user = 'wekha_admin'
 password = 'lop34sw@D'
 
 

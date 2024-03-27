@@ -18,8 +18,8 @@ services:
     hostname: database
     container_name: database
     environment:
-      POSTGRES_DB: wehka
-      POSTGRES_USER: postgres
+      POSTGRES_DB: wekha
+      POSTGRES_USER: wekha_admin
       POSTGRES_PASSWORD: lop34sw@D
     volumes:
       # - ./database/:/app # No lo tengo y parece que funciona perfectamente.
