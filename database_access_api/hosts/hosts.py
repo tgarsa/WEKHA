@@ -51,27 +51,6 @@ def _new_id(provincia):
     return new_id
 
 
-def _add_sede(cursor, data):
-    '''
-    We saved the data. Don't do anymore.
-    :param cursor: The cursor to access to the database
-    :param data: The dataframe with the whole of the data
-    :return: Verification text.
-    '''
-    # SQL to write into the bronze layer
-    # List Comprehension approach
-    sql = "INSERT INTO sedes ("
-    sql += (', ').join(x for x in data.index)
-    sql += ") values ("
-    sql += (',').join('%s' for x in data.index)
-    sql += ")"
-
-    data_sec = tuple([f"{data[x]}" for x in data.index])
-
-    cursor.execute(sql, data_sec)
-    return {'label': 'Done it'}
-
-
 def add(sede):
     '''
     To add a new SEDE into the database.
@@ -80,44 +59,45 @@ def add(sede):
     '''
 
     # Access to the database
-    cursor = connection.cursor()
+    # cursor = connection.cursor()
 
     for cont in range(sede.shape[0]):
         data = sede.iloc[cont]
-        # Now, we build the internal data, "id_sedE", and "created_at"
+        # Now, we build the internal data, "id_sede", and "created_at"
         # Build the new_id.
         data['id_sede'] = _new_id(data['provincia'])
         # Catch the time
         data['created_at'] = time.now()
         data['updated_at'] = data['created_at']
         data_norm = normalize(data.copy())
-        exit_text = _add_sede(cursor, data_norm)
-        connection.commit()
+        # exit_text = _add_sede(cursor, data_norm)
+        exit_text = database.add(data_norm, 'sedes')
+        # connection.commit()
 
     return exit_text
 
 
-def _update_sede(cursor, df):
-    '''
-    Here, we update the data's sede
-    :param cursor: Connection to the database
-    :param data_norm: Data tu update, + sede ID
-    :return: Explanatory text.
-    '''
-    id_jugador = df['id_sede']
-    df.drop('id_sede', inplace=True)
-
-    # Building the sql to update the data in the Silver Layer.
-    sql = 'UPDATE sedes SET'
-
-    for count, column in enumerate(df.index):
-        if count > 0:
-            sql += ','
-        sql += f" {column} = '{df[column]}'"
-    sql += f" WHERE id_sede = '{id_jugador}'"
-    # Execute SQL
-    cursor.execute(sql)
-    return {'label': 'Done It'}
+# def _update_sede(cursor, df):
+#     '''
+#     Here, we update the data's sede
+#     :param cursor: Connection to the database
+#     :param data_norm: Data tu update, + sede ID
+#     :return: Explanatory text.
+#     '''
+#     id_jugador = df['id_sede']
+#     df.drop('id_sede', inplace=True)
+#
+#     # Building the sql to update the data in the Silver Layer.
+#     sql = 'UPDATE sedes SET'
+#
+#     for count, column in enumerate(df.index):
+#         if count > 0:
+#             sql += ','
+#         sql += f" {column} = '{df[column]}'"
+#     sql += f" WHERE id_sede = '{id_jugador}'"
+#     # Execute SQL
+#     cursor.execute(sql)
+#     return {'label': 'Done It'}
 
 
 def update(sede):
@@ -129,8 +109,8 @@ def update(sede):
     '''
 
     columns = list(sede)
-    # Start the cursor.
-    cursor = connection.cursor()
+    # # Start the cursor.
+    # cursor = connection.cursor()
 
     # First add the timestamp to the DF.
     sede['updated_at'] = time.now()
@@ -139,14 +119,15 @@ def update(sede):
     cuantos = _locate_id(data['id_sede'])
     if cuantos == 1:
         # Update the data in the silver layer
-        exit_text = _update_sede(cursor, data_norm)
+        # exit_text = _update_sede(cursor, data_norm)
+        exit_text = database.update(data, 'sedes', 'id_sede')
         # Commit the data
-        connection.commit()
+        # connection.commit()
     else:
-        exit_text = {"label": f'El identificador de la SEDE es incorrecto'}
+        exit_text = {"label": 'El identificador de la SEDE es incorrecto'}
 
     # Close the cursor
-    cursor.close()
+    # cursor.close()
 
     return exit_text
 
@@ -158,20 +139,5 @@ def get(df):
         :return: The data of a player.
         '''
 
-    # Start the connection.
-    cursor = connection.cursor()
-    # Start to build the SQL
-    sql = "select * from sedes where"
-
-    for count, column in enumerate(df.columns):
-        if count > 0:
-            sql += ' and'
-        else:
-            sql += f" {column} = '{df.iloc[0][column]}'"
-
-    cursor.execute(sql)
-    # Download the data
-    data = cursor.fetchall()
-    # Close the connection
-    cursor.close()
-    return data
+    # data =
+    return database.get(df, 'sedes')
