@@ -130,12 +130,16 @@ DROP TABLE IF EXISTS sedes;
 CREATE TABLE sedes (
        id SERIAL PRIMARY KEY,
        id_sede VARCHAR NOT NULL,
+       edificio VARCHAR,
+       provincia VARCHAR NOT NULL,
        localidad VARCHAR NOT NULL,
        postal INTEGER NOT NULL,
        calle VARCHAR NOT NULL,
        numero INTEGER NOT NULL,
-       anadido VARCHAR NOT NULL,
+       anadido VARCHAR,
        accesible BOOLEAN NOT NULL,
        tamano INTEGER NOT NULL,
-       observaciones VARCHAR NOT NULL
+       observaciones VARCHAR,
+       created_at TIMESTAMP NOT NULL,
+       updated_at TIMESTAMP NOT NULL
 );

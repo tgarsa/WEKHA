@@ -8,6 +8,7 @@ from io import StringIO
 
 # importing the methods to communicate with the database
 import players.players as players
+import hosts.hosts as hosts
 
 from psycopg2.extensions import register_adapter, AsIs
 register_adapter(np.int64, AsIs)
@@ -44,4 +45,26 @@ async def update_player(incoming_data: Input):
 async def get_player(incoming_data: Input):
     df = read_json(StringIO(incoming_data.df_json))
     result = players.get(df)
+    return result
+
+
+# Access to the sedes tables.
+@app.post('/new_sede', tags=["LoadHosts"])
+async def new_sede(incoming_data: Input):
+    df = read_json(StringIO(incoming_data.df_json))
+    result = hosts.add(df)
+    return result
+
+
+@app.post('/update_sede', tags=["UpdateHosts"])
+async def update_sede(incoming_data: Input):
+    df = read_json(StringIO(incoming_data.df_json))
+    result = hosts.update(df)
+    return result
+
+
+@app.get('/get_sede', tags=["GetHosts"])
+async def get_sede(incoming_data: Input):
+    df = read_json(StringIO(incoming_data.df_json))
+    result = hosts.get(df)
     return result
