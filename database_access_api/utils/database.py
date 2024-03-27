@@ -124,3 +124,31 @@ def update(data, table, id):
     connection.close()
     return {'label': 'Done It'}
 
+
+def count_id(table, field, id):
+    '''
+    Return the number of ocurrences of an id
+    :param table: Table to search
+    :param field: Field into to search
+    :param id: data to search
+    :return:
+    '''
+
+    # Add the connection
+    connection = psycopg2.connect(
+        host=network.ip,
+        port=network.port,
+        database=database,
+        user=user,
+        password=password
+    )
+    # Connect to the database
+    cursor = connection.cursor()
+
+    sql = f"select id_sede from {table} where {field} LIKE '{id}%'"
+    cursor.execute(sql)
+    cuantos = cursor.rowcount
+    # Close the connection
+    cursor.close()
+    connection.close()
+    return cuantos
