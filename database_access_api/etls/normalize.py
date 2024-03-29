@@ -33,16 +33,27 @@ def _numerize(string):
 # Function to normalize the data
 def normalize(df):
     '''
-    We evaluate each fields that will be necessary to normalize, and send the data t the correct function.
+    We evaluate each field that will be necessary to normalize, and send the data t the correct function.
     :param df: Player's data in a DataFrame format.
     :return: The DataFrame after to normalize
     '''
     for key in df.keys():
-        if key in ['nombre', 'apellido', 'residencia', 'pais']:
+        if key in ['nombre', 'apellido', 'residencia', 'pais', 'edificio', 'provincia', 'localidad']:
             df[key] = _capitalize(df[key])
-        elif key in ['dni', 'telefono']:
+        elif key in ['dni', 'telefono', 'tel_cont', 'numero']:
             df[key] = _numerize(df[key])
-        elif key in ['email']:
+        elif key in ['email', 'email_cont']:
             df[key] = df[key].lower()
     return df
 
+
+def norm_comment(table, id, comment):
+
+    from utils.database import prev_comments
+    from utils.time import date_string
+
+    # Look for the previous comments.
+    prev = prev_comments(table, id)
+    new_comment = date_string + comment
+    return_comment = prev = '\n' + new_comment
+    return return_comment

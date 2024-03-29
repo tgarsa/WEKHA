@@ -13,6 +13,18 @@ user = 'wekha_admin'
 password = 'lop34sw@D'
 
 
+def _get_connection():
+    # Add the connection
+    connection = psycopg2.connect(
+        host=network.ip,
+        port=network.port,
+        database=database,
+        user=user,
+        password=password
+    )
+    return connection
+
+
 def add(data, table):
     '''
     We saved the data. Don't do anymore.
@@ -58,13 +70,7 @@ def get(data, table):
         '''
 
     # Add the connection
-    connection = psycopg2.connect(
-        host=network.ip,
-        port=network.port,
-        database=database,
-        user=user,
-        password=password
-    )
+    connection = _get_connection()
     # Connect to the database
     cursor = connection.cursor()
     # Start to build the SQL
@@ -86,7 +92,7 @@ def get(data, table):
     return data
 
 
-def update(data, table, id):
+def update(data, table):
     '''
     Here, we update the data's sede
     :param data: Data tu update, + ID
@@ -94,19 +100,13 @@ def update(data, table, id):
     :return: Explanatory text.
     '''
     # Add the connection
-    connection = psycopg2.connect(
-        host=network.ip,
-        port=network.port,
-        database=database,
-        user=user,
-        password=password
-    )
+    connection = _get_connection()
     # Connect to the database
     cursor = connection.cursor()
 
     # Working with the data
-    id_jugador = data[id]
-    data.drop(id, inplace=True)
+    id_jugador = data['id']
+    data.drop('id', inplace=True)
 
     # Building the sql to update the data in the Silver Layer.
     sql = f'UPDATE {table} SET'
@@ -115,7 +115,7 @@ def update(data, table, id):
         if count > 0:
             sql += ','
         sql += f" {column} = '{data[column]}'"
-    sql += f" WHERE {id} = '{id_jugador}'"
+    sql += f" WHERE id = '{id_jugador}'"
     # Execute SQL
     cursor.execute(sql)
     connection.commit()
@@ -125,30 +125,51 @@ def update(data, table, id):
     return {'label': 'Done It'}
 
 
-def count_id(table, field, id):
+def count_id(table, id_value):
     '''
     Return the number of ocurrences of an id
     :param table: Table to search
-    :param field: Field into to search
-    :param id: data to search
+    :param id_value: data to search
     :return:
     '''
 
     # Add the connection
-    connection = psycopg2.connect(
-        host=network.ip,
-        port=network.port,
-        database=database,
-        user=user,
-        password=password
-    )
+    connection = _get_connection()
     # Connect to the database
     cursor = connection.cursor()
-
-    sql = f"select id_sede from {table} where {field} LIKE '{id}%'"
+    # Define sql
+    sql = f"select id from {table} where id LIKE '{id_value}%'"
     cursor.execute(sql)
     cuantos = cursor.rowcount
     # Close the connection
     cursor.close()
     connection.close()
     return cuantos
+
+
+def prev_comments(table, id_value):
+    '''
+    Recover the comments added in the table.
+    :param table: Table in which I look for
+    :param id: Entity id
+    :return: String with the previous comments or null string
+    '''
+
+    sql = f"select observaciones from {table} where id LIKE '{id_value}%'"
+
+    # Add the connection
+    connection = _get_connection()
+    # Connect to the database
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    cuantos = cursor.rowcount
+    if cuantos == 0:
+        return_text = ''
+    else:
+        return_text = cursor.fetchone()
+
+    # Close the connection
+    cursor.close()
+    connection.close()
+    return return_text
+

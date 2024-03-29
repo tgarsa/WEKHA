@@ -1,14 +1,14 @@
 # Access to our how Library
 # TODO: Look for an alternative import to won't see this error.
 from utils import database, time
-from etls.normalize import normalize
+from etls.normalize import normalize, norm_comment
 
-# Set of id keys of each table
-# "table" : "id_key"
-id_key = {'sedes': 'id_sede'}
+# # Set of id keys of each table
+# # "table": "id_key"
+# id_key = {'sedes': 'id_sede'}
 
 # Set of filed used to build id keys of each table
-# "table" : "field"
+# "table": "field"
 id_build = {'sedes': 'provincia'}
 
 
@@ -21,7 +21,7 @@ def _new_id(table, key):
     new_id = ''
     for name in key.split(' '):
         new_id += name.capitalize()
-    cuantos = database.count_id(table, id_key[table], f'{new_id}')
+    cuantos = database.count_id(table, f'{new_id}')
     new_id += f'{cuantos + 1:03d}'
     return new_id
 
@@ -38,12 +38,13 @@ def add(data, table):
         data = data.iloc[cont].copy()
         # Now, we build the internal data, "id_sede", and "created_at"
         # Build the new_id.
-        data[id_key[table]] = _new_id(table, data[id_build[table]])
+        data['id'] = _new_id(table, data[id_build[table]])
         # Catch the time
         data['created_at'] = time.now()
         data['updated_at'] = data['created_at']
         # Normalize the data
         data_norm = normalize(data)
+        data_norm['observaciones'] = norm_comment(table, data_norm['id'], data_norm['observaciones'])
         exit_text = database.add(data_norm, table)
 
     return exit_text
@@ -51,7 +52,7 @@ def add(data, table):
 
 def update(data, table):
     '''
-    This function update the data contained into the database using the 'id_jugador' as key.
+    This function updates the data contained into the database using the 'id' as key.
     :param data: This will contain the 'id_sede' to know which player we will to modify and the rest of the fields will
      contain the new data.
     :param table: Table to use.
@@ -59,13 +60,14 @@ def update(data, table):
     '''
 
     columns = list(data)
-    # First add the timestamp to the DF.
+    # Adding the timestamp to the DF.
     data['updated_at'] = time.now()
     data = data.iloc[0].copy()
     data_norm = normalize(data)
-    cuantos = database.count_id(table, id_key[table], f"{data[id_key[table]]}")
+    data_norm['observaciones'] = norm_comment(table, data_norm['id'], data_norm['observaciones'])
+    cuantos = database.count_id(table, f"{data_norm['id']}")
     if cuantos == 1:
-        exit_text = database.update(data_norm, table, id_key[table])
+        exit_text = database.update(data_norm, table)
     else:
         exit_text = {"label": f'El identificador clave de la {table} es incorrecto'}
     return exit_text

@@ -3,8 +3,8 @@
 
 DROP TABLE IF EXISTS campeonatos;
 CREATE TABLE campeonatos (
-       id SERIAL PRIMARY KEY,
-       id_campeonato VARCHAR NOT NULL,
+       id_table SERIAL PRIMARY KEY,
+       id VARCHAR NOT NULL,
        nombre VARCHAR NOT NULL,
        lugar VARCHAR NOT NULL,
        id_sede VARCHAR NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE campeonatos (
 
 DROP TABLE IF EXISTS campeonatos_arbitros;
 CREATE TABLE campeonatos_arbitros (
-       id SERIAL PRIMARY KEY,
+       id_table SERIAL PRIMARY KEY,
        id_campeonato VARCHAR NOT NULL,
        id_arbitro VARCHAR NOT NULL
 );
@@ -28,22 +28,22 @@ CREATE TABLE campeonatos_arbitros (
 
 DROP TABLE IF EXISTS campeonatos_jugadores;
 CREATE TABLE campeonatos_jugadores (
-       id SERIAL PRIMARY KEY,
+       id_table SERIAL PRIMARY KEY,
        id_campeonato VARCHAR NOT NULL,
        id_jugadores VARCHAR NOT NULL
 );
 
 
 DROP TABLE IF EXISTS campeonatos_jugadas;
-CREATE TABLE campeonatos_jugadass (
-       id SERIAL PRIMARY KEY,
+CREATE TABLE campeonatos_jugadas (
+       id_table SERIAL PRIMARY KEY,
        id_campeonato VARCHAR NOT NULL,
        id_prueba VARCHAR NOT NULL,
        id_mesa VARCHAR NOT NULL,
        id_ronda VARCHAR NOT NULL,
        id_arbitro VARCHAR NOT NULL,
        acc_penals INTEGER NOT NULL,
-       acc_desem INTEGER NOT NULL
+       acc_desem INTEGER NOT NULL -- Acumulado puntos desempates.
 );
 
 
@@ -51,8 +51,8 @@ CREATE TABLE campeonatos_jugadass (
 
 DROP TABLE IF EXISTS pruebas;
 CREATE TABLE pruebas (
-       id SERIAL PRIMARY KEY,
-       id_prueba VARCHAR NOT NULL,
+       id_table SERIAL PRIMARY KEY,
+       id VARCHAR NOT NULL,
        nombre VARCHAR NOT NULL,
        enunciado VARCHAR NOT NULL,
        material VARCHAR NOT NULL,
@@ -65,8 +65,8 @@ CREATE TABLE pruebas (
 
 DROP TABLE IF EXISTS jugadores_bronze;
 CREATE TABLE jugadores_bronze (
-       id SERIAL PRIMARY KEY,
-       id_jugador VARCHAR NOT NULL,
+       id_table SERIAL PRIMARY KEY,
+       id VARCHAR NOT NULL,
        dni VARCHAR,
        nombre VARCHAR,
        apellidos VARCHAR,
@@ -83,8 +83,8 @@ CREATE TABLE jugadores_bronze (
 
 DROP TABLE IF EXISTS jugadores;
 CREATE TABLE jugadores (
-       id SERIAL PRIMARY KEY,
-       id_jugador VARCHAR NOT NULL,
+       id_table SERIAL PRIMARY KEY,
+       id VARCHAR NOT NULL,
        dni VARCHAR NOT NULL,
        nombre VARCHAR NOT NULL,
        apellidos VARCHAR NOT NULL,
@@ -103,17 +103,17 @@ CREATE TABLE jugadores (
 
 DROP TABLE IF EXISTS jugadores_campeonato;
 CREATE TABLE jugadores_campeonato (
-       id SERIAL PRIMARY KEY,
+       id_table SERIAL PRIMARY KEY,
        id_jugador VARCHAR NOT NULL,
        id_campeonato VARCHAR NOT NULL,
        acc_penal INTEGER NOT NULL,
-       acc_desem INTEGER NOT NULL,
+       acc_desem INTEGER NOT NULL, -- Acumulado puntos desempates.
        puesto INTEGER NOT NULL
 );
 
 DROP TABLE IF EXISTS jugadores_pruebas;
 CREATE TABLE jugadores_pruebas (
-       id SERIAL PRIMARY KEY,
+       id_table SERIAL PRIMARY KEY,
        id_jugador VARCHAR NOT NULL,
        id_campeonato VARCHAR NOT NULL,
        id_prueba VARCHAR NOT NULL,
@@ -121,25 +121,29 @@ CREATE TABLE jugadores_pruebas (
        propuesta VARCHAR NOT NULL,
        resultado VARCHAR NOT NULL,
        penal INTEGER NOT NULL,
-       desem INTEGER NOT NULL
+       desem INTEGER NOT NULL -- Puntos desempates.
 );
 
 -- CREATE TABLES Sedes
 
 DROP TABLE IF EXISTS sedes;
 CREATE TABLE sedes (
-       id SERIAL PRIMARY KEY,
-       id_sede VARCHAR NOT NULL,
+       id_table SERIAL PRIMARY KEY,
+       id VARCHAR NOT NULL,
        edificio VARCHAR,
        provincia VARCHAR NOT NULL,
        localidad VARCHAR NOT NULL,
-       postal INTEGER NOT NULL,
+       postal VARCHAR NOT NULL,
        calle VARCHAR NOT NULL,
        numero INTEGER NOT NULL,
        anadido VARCHAR,
        accesible BOOLEAN NOT NULL,
        tamano INTEGER NOT NULL,
        observaciones VARCHAR,
+       dep_cont VARCHAR,
+       per_cont VARCHAR,
+       tel_cont VARCHAR,
+       email_cont VARCHAR,
        created_at TIMESTAMP NOT NULL,
        updated_at TIMESTAMP NOT NULL
 );
