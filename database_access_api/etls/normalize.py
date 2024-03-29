@@ -1,4 +1,5 @@
 # In this package we will define the functions that we will use to normalize the data
+from datetime import datetime
 
 # Function to Capitalize the names
 def _capitalize(input):
@@ -54,5 +55,7 @@ def normalize(df, table):
             df[key] = df[key].lower()
         elif key in ['observaciones']:
             df[key] = _norm_comment(table, df['id'], df[key])
+        elif key in ['hasta']:
+            df[key] = datetime.strptime(df[key],"%d/%m/%Y")
     return df
 

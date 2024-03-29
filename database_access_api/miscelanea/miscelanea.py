@@ -81,8 +81,6 @@ def update(data, table):
     :return: Explanatory text.
     '''
 
-    columns = list(data)
-    print(columns)
     # Adding the timestamp to the DF.
     data['updated_at'] = time.now()
     data = data.iloc[0].copy()
