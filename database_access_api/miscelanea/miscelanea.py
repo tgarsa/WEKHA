@@ -1,11 +1,7 @@
 # Access to our how Library
 # TODO: Look for an alternative import to won't see this error.
 from utils import database, time
-from etls.normalize import normalize, norm_comment
-
-# # Set of id keys of each table
-# # "table": "id_key"
-# id_key = {'sedes': 'id_sede'}
+from etls.normalize import normalize
 
 # Set of filed used to build id keys of each table
 # "table": "field"
@@ -43,8 +39,7 @@ def add(data, table):
         data['created_at'] = time.now()
         data['updated_at'] = data['created_at']
         # Normalize the data
-        data_norm = normalize(data)
-        data_norm['observaciones'] = norm_comment(table, data_norm['id'], data_norm['observaciones'])
+        data_norm = normalize(data, table)
         exit_text = database.add(data_norm, table)
 
     return exit_text
@@ -63,8 +58,7 @@ def update(data, table):
     # Adding the timestamp to the DF.
     data['updated_at'] = time.now()
     data = data.iloc[0].copy()
-    data_norm = normalize(data)
-    data_norm['observaciones'] = norm_comment(table, data_norm['id'], data_norm['observaciones'])
+    data_norm = normalize(data, table)
     cuantos = database.count_id(table, f"{data_norm['id']}")
     if cuantos == 1:
         exit_text = database.update(data_norm, table)

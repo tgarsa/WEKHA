@@ -30,10 +30,18 @@ def _numerize(string):
     return sub(r'[^0-9]', '', str(string))
 
 
+def _norm_comment(table, id, comment):
+
+    from utils.database import prev_comments
+    from utils.time import date_string
+
+    # Look for the previous comments.
+    return prev_comments(table, id)[0] + date_string() + ': ' + comment + ' \n '
+
 # Function to normalize the data
-def normalize(df):
+def normalize(df, table):
     '''
-    We evaluate each field that will be necessary to normalize, and send the data t the correct function.
+    We evaluate each field that will be necessary to normalize, and send the data the correct function.
     :param df: Player's data in a DataFrame format.
     :return: The DataFrame after to normalize
     '''
@@ -44,16 +52,7 @@ def normalize(df):
             df[key] = _numerize(df[key])
         elif key in ['email', 'email_cont']:
             df[key] = df[key].lower()
+        elif key in ['observaciones']:
+            df[key] = _norm_comment(table, df['id'], df[key])
     return df
 
-
-def norm_comment(table, id, comment):
-
-    from utils.database import prev_comments
-    from utils.time import date_string
-
-    # Look for the previous comments.
-    prev = prev_comments(table, id)
-    new_comment = date_string + comment
-    return_comment = prev = '\n' + new_comment
-    return return_comment

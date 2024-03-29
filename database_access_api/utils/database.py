@@ -34,13 +34,7 @@ def add(data, table):
     '''
 
     # Add the connection
-    connection = psycopg2.connect(
-        host=network.ip,
-        port=network.port,
-        database=database,
-        user=user,
-        password=password
-    )
+    connection = _get_connection()
     # Connect to the database
     cursor = connection.cursor()
 
@@ -155,8 +149,8 @@ def prev_comments(table, id_value):
     :return: String with the previous comments or null string
     '''
 
+    # Define the SQL
     sql = f"select observaciones from {table} where id LIKE '{id_value}%'"
-
     # Add the connection
     connection = _get_connection()
     # Connect to the database
@@ -164,10 +158,9 @@ def prev_comments(table, id_value):
     cursor.execute(sql)
     cuantos = cursor.rowcount
     if cuantos == 0:
-        return_text = ''
+        return_text = tuple(' ')
     else:
         return_text = cursor.fetchone()
-
     # Close the connection
     cursor.close()
     connection.close()

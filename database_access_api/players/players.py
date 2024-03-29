@@ -29,7 +29,7 @@ def _locate_id(id):
     :param id: The letters of the ID, from the name and surname.
     :return: The number of possible duplicates.
     '''
-    sql = "select id_jugador from jugadores where id_jugador LIKE '{}%'".format(id)
+    sql = "select id from jugadores where id LIKE '{}%'".format(id)
     # Connect to the database
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -66,7 +66,7 @@ def _invalid_data(**kwargs):
     for i in kwargs.items():
         sql = f"select {i[0]} from jugadores where {i[0]} LIKE '{i[1]}'"
         cursor.execute(sql)
-        if i[0] != 'id_jugador':
+        if i[0] != 'id':
             if cursor.rowcount > 0:
                 return_text += f'{i[0]}, '
         else:
@@ -107,10 +107,10 @@ def _add_player(cursor, data):
     '''
 
     # SQL to write into the bronze layer
-    sql_silver = ("INSERT INTO jugadores (id_jugador, dni, nombre, apellidos, nick, email, telefono, "
+    sql_silver = ("INSERT INTO jugadores (id, dni, nombre, apellidos, nick, email, telefono, "
                   "residencia, pais, talla, discapacidades, observaciones, created_at, updated_at) "
                   "values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
-    cursor.execute(sql_silver, (data['id_jugador'], data['dni'], data['nombre'], data['apellidos'],
+    cursor.execute(sql_silver, (data['id'], data['dni'], data['nombre'], data['apellidos'],
                                 data['nick'], data['email'], data['telefono'], data['residencia'],
                                 data['pais'], data['talla'], data['discapacidades'], data['observaciones'],
                                 data['created_at'], data['created_at'])
@@ -133,12 +133,12 @@ def add(player):
 
     for cont in range(player.shape[0]):
         data = player.iloc[cont]
-        # Now, we build the internal data, "id_player", and "created_at"
+        # Now, we build the internal data, "id", and "created_at"
         # Build the new_id.
-        data['id_jugador'] = _new_id(data['nombre'], data['apellidos'])
+        data['id'] = _new_id(data['nombre'], data['apellidos'])
         # Catch the time
         data['created_at'] = time.now()
-        data_norm = normalize(data.copy())
+        data_norm = normalize(data.copy(), 'jugadores')
         invalid_data_text = _invalid_data(dni=data_norm['dni'],
                                           email=data_norm['email'],
                                           telefono=data_norm['telefono'])
@@ -188,8 +188,8 @@ def _update_player(cursor, df):
     :return: Explanatory text.
     '''
 
-    id_jugador = df['id_jugador']
-    df.drop('id_jugador', inplace=True)
+    id_jugador = df['id']
+    df.drop('id', inplace=True)
 
     # Building the sql to update the data in the Silver Layer.
     sql = 'UPDATE jugadores SET'
@@ -201,7 +201,7 @@ def _update_player(cursor, df):
             sql += f" updated_at = '{df[column]}'"
         else:
             sql += f" {column} = '{df[column]}'"
-    sql += f" WHERE id_jugador = '{id_jugador}'"
+    sql += f" WHERE id = '{id_jugador}'"
     # Execute SQL
     cursor.execute(sql)
 
@@ -211,9 +211,9 @@ def _update_player(cursor, df):
 
 def update(df):
     '''
-    This function update the data contained into the database using the 'id_jugador' as key.
-    :param df: This will contain the 'id_jugador' to know which player we will to modify and the rest of the fields will
-     contain the new data.
+    This function updates the data contained into the database using the 'id' as key.
+    :param df: This will contain the 'id' to know which player we will to modify, and the rest of the fields
+    will contain the new data.
     :return: Explanatory text.
     '''
 
@@ -221,11 +221,11 @@ def update(df):
     # Start the cursor.
     cursor = connection.cursor()
 
-    # First add the timestamp to the DF.
+    # Adding the timestamp to the DF.
     df['created_at'] = time.now()
-    data = df.iloc[0]
-    data_norm = normalize(data.copy())
-    invalid_data_text = _invalid_data(id_jugador=data_norm['id_jugador'])
+    data = df.iloc[0].copy()
+    data_norm = normalize(data.copy(), 'jugadores')
+    invalid_data_text = _invalid_data(id=data_norm['id'])
     if 'dni' in columns:
         if invalid_data_text != '':
             invalid_data_text += ', '
@@ -253,4 +253,5 @@ def update(df):
     # Close the cursor
     cursor.close()
 
+    print(exit_text)
     return exit_text
