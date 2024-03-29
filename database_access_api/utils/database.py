@@ -157,10 +157,12 @@ def prev_comments(table, id_value):
     cursor = connection.cursor()
     cursor.execute(sql)
     cuantos = cursor.rowcount
+    print(f'Suma es: {cuantos}')
     if cuantos == 0:
         return_text = tuple(' ')
     else:
         return_text = cursor.fetchone()
+        print(return_text)
     # Close the connection
     cursor.close()
     connection.close()
@@ -175,7 +177,12 @@ def check_id(field, id_value):
     :return: Number of repetitions of the ID
     '''
     tables = {
-        'id_jugador' : 'jugadores'
+        'id_jugador': 'jugadores',
+        'id_sede': 'sedes',
+        'id_licencia': 'licencias',
+        'id_patrocinador': 'patrocinadores',
+        'id_alojamiento': 'alojamientos',
+        'id_campeonato': 'campeonatos'
     }
 
     return count_id(tables[field], id_value)

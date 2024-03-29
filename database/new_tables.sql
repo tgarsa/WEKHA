@@ -160,3 +160,54 @@ CREATE TABLE licencias (
        created_at TIMESTAMP NOT NULL,
        updated_at TIMESTAMP NOT NULL
 );
+
+-- CREATE TABLES Patrocinadores
+
+DROP TABLE IF EXISTS patrocinadores;
+CREATE TABLE patrocinadores (
+       id_table SERIAL PRIMARY KEY,
+       id VARCHAR NOT NULL,
+       nombre VARCHAR NOT NULL,
+       actividad VARCHAR NOT NULL,
+       dep_cont VARCHAR,
+       per_cont VARCHAR,
+       tel_cont VARCHAR,
+       email_cont VARCHAR,
+       observaciones VARCHAR,
+       created_at TIMESTAMP NOT NULL,
+       updated_at TIMESTAMP NOT NULL
+);
+
+DROP TABLE IF EXISTS patrocinios;
+CREATE TABLE patrocinios (
+       id_table SERIAL PRIMARY KEY,
+       id VARCHAR NOT NULL,
+       id_patrocinador VARCHAR NOT NULL,
+       id_campeonato VARCHAR NOT NULL,
+       aportacion VARCHAR NOT NULL,
+       observaciones VARCHAR,
+       created_at TIMESTAMP NOT NULL,
+       updated_at TIMESTAMP NOT NULL
+);
+
+DROP TABLE IF EXISTS alojamientos;
+CREATE TABLE alojamientos (
+       id_table SERIAL PRIMARY KEY,
+       id VARCHAR NOT NULL,
+       nombre VARCHAR NOT NULL,
+       edificio VARCHAR,
+       provincia VARCHAR NOT NULL,
+       localidad VARCHAR NOT NULL,
+       postal VARCHAR NOT NULL,
+       calle VARCHAR NOT NULL,
+       numero INTEGER NOT NULL,
+       anadido VARCHAR,
+       accesible BOOLEAN NOT NULL,
+       dep_cont VARCHAR,
+       per_cont VARCHAR,
+       tel_cont VARCHAR,
+       email_cont VARCHAR,
+       observaciones VARCHAR,
+       created_at TIMESTAMP NOT NULL,
+       updated_at TIMESTAMP NOT NULL
+);

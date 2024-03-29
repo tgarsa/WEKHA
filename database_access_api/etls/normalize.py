@@ -35,9 +35,15 @@ def _norm_comment(table, id, comment):
 
     from utils.database import prev_comments
     from utils.time import date_string
+    from pandas import isnull
 
     # Look for the previous comments.
-    return prev_comments(table, id)[0] + date_string() + ': ' + comment + ' \n '
+    prev = prev_comments(table, id)[0]
+    if isnull(prev):
+        return_text = date_string() + ': ' + comment + ' \n '
+    else:
+        return_text = prev + date_string() + ': ' + comment + ' \n '
+    return return_text
 
 # Function to normalize the data
 def normalize(df, table):
@@ -47,7 +53,8 @@ def normalize(df, table):
     :return: The DataFrame after to normalize
     '''
     for key in df.keys():
-        if key in ['nombre', 'apellido', 'residencia', 'pais', 'edificio', 'provincia', 'localidad', 'ambito']:
+        if key in ['nombre', 'apellido', 'residencia', 'pais', 'edificio', 'provincia', 'localidad', 'ambito',
+                   'dep_cont', 'per_cont']:
             df[key] = _capitalize(df[key])
         elif key in ['dni', 'telefono', 'tel_cont', 'numero']:
             df[key] = _numerize(df[key])
@@ -56,6 +63,6 @@ def normalize(df, table):
         elif key in ['observaciones']:
             df[key] = _norm_comment(table, df['id'], df[key])
         elif key in ['hasta']:
-            df[key] = datetime.strptime(df[key],"%d/%m/%Y")
+            df[key] = datetime.strptime(df[key], "%d/%m/%Y")
     return df
 

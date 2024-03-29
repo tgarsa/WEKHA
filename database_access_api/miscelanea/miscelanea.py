@@ -6,26 +6,35 @@ from etls.normalize import normalize
 # Set of filed used to build id keys of each table
 # "table": "field"
 id_build = {
+    # 'jugadores': tuple('nombre', 'apellidos'),
     'sedes': 'provincia',
-    'licencias': 'ambito'
+    'licencias': 'ambito',
+    'patrocinadores': 'nombre',
+    'alojamientos': 'nombre',
+    'patrocinios': ('id_patrocinador', 'id_campeonato')
 }
 
 
-def _new_id(table, key):
+def _new_id(table, keys):
     '''
     We build the new ID, after to do a search into the database.
     :param provincia:
     :return: the new ID
     '''
     new_id = ''
-    for name in key.split(' '):
-        new_id += name.capitalize()
+    if type(keys) == str:
+        for name in keys.split(' '):
+            new_id += name.capitalize()
+    elif type(keys) == tuple:
+        for key in keys:
+            for name in key.split(' '):
+                new_id += name.capitalize()
     cuantos = database.count_id(table, f'{new_id}')
     new_id += f'{cuantos + 1:03d}'
     return new_id
 
 
-def _test_ids(data, table):
+def _test_ids(data):
     '''
     Tested if the connected IDs are in the database
     :param data:
@@ -34,9 +43,9 @@ def _test_ids(data, table):
     '''
     exit_text = ''
     for count, column in enumerate(data.index):
-        if (column != 'id_table') and ('id_' in column):
+        # TODO: Delete the additional condition when I would have data in the table.
+        if (column != 'id_table') and ('id_' in column) and (column != 'id_campeonato'):
             cuantos = database.check_id(column, data[column])
-            print(cuantos)
             if cuantos != 1:
                 if count > 1:
                     exit_text += ', '
@@ -51,15 +60,18 @@ def add(data, table):
     :param table: Table to use.
     :return: Explanatory text.
     '''
-    print(table)
-
     for cont in range(data.shape[0]):
         data = data.iloc[cont].copy()
-        result = _test_ids(data, table)
+        result = _test_ids(data)
         if result == '':
             # Now, we build the internal data, "id", and "created_at"
             # Build the new_id.
-            data['id'] = _new_id(table, data[id_build[table]])
+            if table in id_build.keys():
+                if type(id_build[table]) == tuple:
+                    pas_data = tuple(data[campo] for campo in id_build[table])
+                else:
+                    pas_data = data[id_build[table]]
+                data['id'] = _new_id(table, pas_data)
             # Catch the time
             data['created_at'] = time.now()
             data['updated_at'] = data['created_at']
