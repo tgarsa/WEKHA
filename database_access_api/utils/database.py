@@ -166,3 +166,16 @@ def prev_comments(table, id_value):
     connection.close()
     return return_text
 
+
+def check_id(field, id_value):
+    '''
+    Looking for the id_value in the correct table.
+    :param field: name of the field that contains the id
+    :param id_value: value itself
+    :return: Number of repetitions of the ID
+    '''
+    tables = {
+        'id_jugador' : 'jugadores'
+    }
+
+    return count_id(tables[field], id_value)

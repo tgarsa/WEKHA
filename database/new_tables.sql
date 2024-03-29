@@ -147,3 +147,16 @@ CREATE TABLE sedes (
        created_at TIMESTAMP NOT NULL,
        updated_at TIMESTAMP NOT NULL
 );
+
+-- CREATE TABLES Licencias
+
+DROP TABLE IF EXISTS licencias;
+CREATE TABLE licencias (
+       id_table SERIAL PRIMARY KEY,
+       id VARCHAR NOT NULL,
+       id_jugador VARCHAR NOT NULL,
+       hasta TIMESTAMP,
+       ambito VARCHAR NOT NULL,
+       created_at TIMESTAMP NOT NULL,
+       updated_at TIMESTAMP NOT NULL
+);

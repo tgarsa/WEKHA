@@ -5,7 +5,10 @@ from etls.normalize import normalize
 
 # Set of filed used to build id keys of each table
 # "table": "field"
-id_build = {'sedes': 'provincia'}
+id_build = {
+    'sedes': 'provincia',
+    'licencias': 'ambito'
+}
 
 
 def _new_id(table, key):
@@ -22,6 +25,25 @@ def _new_id(table, key):
     return new_id
 
 
+def _test_ids(data, table):
+    '''
+    Tested if the connected IDs are in the database
+    :param data:
+    :param table:
+    :return:
+    '''
+    exit_text = ''
+    for count, column in enumerate(data.index):
+        if (column != 'id_table') and ('id_' in column):
+            cuantos = database.check_id(column, data[column])
+            print(cuantos)
+            if cuantos != 1:
+                if count > 1:
+                    exit_text += ', '
+                exit_text += column
+    return exit_text
+
+
 def add(data, table):
     '''
     To add a new SEDE into the database.
@@ -29,18 +51,23 @@ def add(data, table):
     :param table: Table to use.
     :return: Explanatory text.
     '''
+    print(table)
 
     for cont in range(data.shape[0]):
         data = data.iloc[cont].copy()
-        # Now, we build the internal data, "id_sede", and "created_at"
-        # Build the new_id.
-        data['id'] = _new_id(table, data[id_build[table]])
-        # Catch the time
-        data['created_at'] = time.now()
-        data['updated_at'] = data['created_at']
-        # Normalize the data
-        data_norm = normalize(data, table)
-        exit_text = database.add(data_norm, table)
+        result = _test_ids(data, table)
+        if result == '':
+            # Now, we build the internal data, "id", and "created_at"
+            # Build the new_id.
+            data['id'] = _new_id(table, data[id_build[table]])
+            # Catch the time
+            data['created_at'] = time.now()
+            data['updated_at'] = data['created_at']
+            # Normalize the data
+            data_norm = normalize(data, table)
+            exit_text = database.add(data_norm, table)
+        else:
+            exit_text = f"Los identificadore {result} no estan en la base de datos"
 
     return exit_text
 
@@ -55,6 +82,7 @@ def update(data, table):
     '''
 
     columns = list(data)
+    print(columns)
     # Adding the timestamp to the DF.
     data['updated_at'] = time.now()
     data = data.iloc[0].copy()
