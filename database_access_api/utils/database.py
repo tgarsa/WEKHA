@@ -38,7 +38,7 @@ def add(data, table):
     # Connect to the database
     cursor = connection.cursor()
 
-    # SQL to write into treh table
+    # SQL to write into the table
     # List Comprehension approach
     sql = f"INSERT INTO {table} ("
     sql += (', ').join(x for x in data.index)
@@ -47,7 +47,6 @@ def add(data, table):
     sql += ")"
 
     data_sec = tuple([f"{data[x]}" for x in data.index])
-
     cursor.execute(sql, data_sec)
     connection.commit()
     cursor.close()
@@ -73,9 +72,7 @@ def get(data, table):
     for count, column in enumerate(data.columns):
         if count > 0:
             sql += ' and'
-        else:
-            sql += f" {column} = '{data.iloc[0][column]}'"
-
+        sql += f" {column} = '{data.iloc[0][column]}'"
     cursor.execute(sql)
     # Download the data
     data = cursor.fetchall()
@@ -157,12 +154,10 @@ def prev_comments(table, id_value):
     cursor = connection.cursor()
     cursor.execute(sql)
     cuantos = cursor.rowcount
-    print(f'Suma es: {cuantos}')
     if cuantos == 0:
         return_text = tuple(' ')
     else:
         return_text = cursor.fetchone()
-        print(return_text)
     # Close the connection
     cursor.close()
     connection.close()
@@ -178,11 +173,16 @@ def check_id(field, id_value):
     '''
     tables = {
         'id_jugador': 'jugadores',
+        'id_arbitro': 'jugadores',
+        'id_organizador': 'jugadores',
         'id_sede': 'sedes',
         'id_licencia': 'licencias',
         'id_patrocinador': 'patrocinadores',
         'id_alojamiento': 'alojamientos',
-        'id_campeonato': 'campeonatos'
+        'id_campeonato': 'campeonatos',
+        'id_mesa': 'mesas',
+        'id_ronda': 'rondas',
+        'id_prueba': 'pruebas'
     }
 
     return count_id(tables[field], id_value)

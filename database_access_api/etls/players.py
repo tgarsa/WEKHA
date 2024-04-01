@@ -24,6 +24,7 @@ connection = psycopg2.connect(
 
 
 def add(player):
+    print("#Y esta MIERDA que es#")
 
     # Access to the database
     cursor = connection.cursor()

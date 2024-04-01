@@ -53,10 +53,11 @@ def normalize(df, table):
     :return: The DataFrame after to normalize
     '''
     for key in df.keys():
-        if key in ['nombre', 'apellido', 'residencia', 'pais', 'edificio', 'provincia', 'localidad', 'ambito',
+        if key in ['nombre', 'apellidos', 'residencia', 'pais', 'edificio', 'provincia', 'localidad', 'ambito',
                    'dep_cont', 'per_cont']:
             df[key] = _capitalize(df[key])
-        elif key in ['dni', 'telefono', 'tel_cont', 'numero']:
+        elif key in ['dni', 'telefono', 'tel_cont', 'numero', 'fila', 'columna', 'propuesta', 'resultado', 'penal',
+                     'desem', 'acc_penal', 'ac_desem', 'puesto', 'discapacidades']:
             df[key] = _numerize(df[key])
         elif key in ['email', 'email_cont']:
             df[key] = df[key].lower()

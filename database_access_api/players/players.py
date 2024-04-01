@@ -253,5 +253,4 @@ def update(df):
     # Close the cursor
     cursor.close()
 
-    print(exit_text)
     return exit_text

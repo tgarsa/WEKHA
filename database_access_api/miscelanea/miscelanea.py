@@ -7,11 +7,19 @@ from etls.normalize import normalize
 # "table": "field"
 id_build = {
     # 'jugadores': tuple('nombre', 'apellidos'),
-    'sedes': 'provincia',
-    'licencias': 'ambito',
-    'patrocinadores': 'nombre',
-    'alojamientos': 'nombre',
-    'patrocinios': ('id_patrocinador', 'id_campeonato')
+    'sedes': ('provincia', ),
+    'licencias': ('ambito', ),
+    'patrocinadores': ('nombre', ),
+    'alojamientos': ('nombre', ),
+    'patrocinios': ('id_patrocinador', 'id_campeonato'),
+    'campeonatos': ('nombre', ),
+    'campeonatos_arbitros': ('id_campeonato', 'id_arbitro'),
+    'campeonatos_jugadores': ('id_campeonato', 'id_jugador'),
+    'campeonatos_jugadas': ('id_campeonato', 'id_prueba', 'id_mesa', 'id_ronda'),
+    'mesas': ('id_campeonato', 'fila', 'columna'),
+    'pruebas': ('nombre', 'discapacidades'),
+    'jugadores_campeonato': ('id_jugador', 'id_campeonato'),
+    'jugadores_pruebas': ('id_jugador', 'id_campeonato', 'id_prueba', 'id_ronda')
 }
 
 
@@ -22,11 +30,10 @@ def _new_id(table, keys):
     :return: the new ID
     '''
     new_id = ''
-    if type(keys) == str:
-        for name in keys.split(' '):
-            new_id += name.capitalize()
-    elif type(keys) == tuple:
-        for key in keys:
+    for key in keys:
+        if str(key).isdigit():
+            new_id += str(key)
+        else:
             for name in key.split(' '):
                 new_id += name.capitalize()
     cuantos = database.count_id(table, f'{new_id}')
@@ -43,8 +50,7 @@ def _test_ids(data):
     '''
     exit_text = ''
     for count, column in enumerate(data.index):
-        # TODO: Delete the additional condition when I would have data in the table.
-        if (column != 'id_table') and ('id_' in column) and (column != 'id_campeonato'):
+        if (column != 'id_table') and ('id_' in column):
             cuantos = database.check_id(column, data[column])
             if cuantos != 1:
                 if count > 1:
