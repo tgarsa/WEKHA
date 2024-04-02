@@ -59,25 +59,20 @@ def _test_ids(data):
     return exit_text
 
 
-def add(data, table):
+def add(indata, table):
     '''
     To add a new SEDE into the database.
     :param data: Hosts' data.
     :param table: Table to use.
     :return: Explanatory text.
     '''
-    for cont in range(data.shape[0]):
-        data = data.iloc[cont].copy()
+    # print(data)
+    for cont in range(indata.shape[0]):
+        data = indata.iloc[cont]
         result = _test_ids(data)
         if result == '':
-            # Now, we build the internal data, "id", and "created_at"
-            # Build the new_id.
-            if table in id_build.keys():
-                if type(id_build[table]) == tuple:
-                    pas_data = tuple(data[campo] for campo in id_build[table])
-                else:
-                    pas_data = data[id_build[table]]
-                data['id'] = _new_id(table, pas_data)
+            id_data = tuple(data[campo] for campo in id_build[table])
+            data['id'] = _new_id(table, id_data)
             # Catch the time
             data['created_at'] = time.now()
             data['updated_at'] = data['created_at']
