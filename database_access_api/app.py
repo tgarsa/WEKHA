@@ -1,9 +1,20 @@
 # Here only define the end points.
 import numpy as np
+import fastapi
 from fastapi import FastAPI
 from pydantic import BaseModel
 from pandas import read_json
 from io import StringIO
+
+# Tested FORM
+# from src.model import spell_number
+import jinja2
+from fastapi import Request, Form
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+import os
+# End Test
 
 # To add security
 from datetime import timedelta
@@ -31,7 +42,12 @@ class Input(BaseModel):
 # Defining our API
 app = FastAPI(title="Database Access",
               description="A simple api to connect with the database to obtain the WEKHA data.",
-              version="0.1")
+              version="0.1"
+              )
+# app = FastAPI()
+# app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+# templates = Jinja2Templates(directory='templates', autoescape=False, auto_reload=True)
 
 
 # Security
@@ -100,3 +116,34 @@ async def get(incoming_data: Input,
     df = read_json(StringIO(incoming_data.df_json))
     result = hosts.get(df, incoming_data.table)
     return result
+
+
+# Tested FORM
+@app.get('/')
+def read_root():
+    cual = fastapi.__version__
+    return f'Hola MUNDO: {cual}'
+
+
+@app.get("/form",
+         response_class=HTMLResponse)
+def form_post(request: Request):
+    result = "Type a number"
+    # print(result)
+    # print(os.path.abspath(os.path.expanduser('templates')))
+    # print('Tomasada')
+    return templates.TemplateResponse(request=request,
+                                      name="form.html",
+                                      context={'result': result}
+                                      )
+
+@app.post("/form",
+          response_class=HTMLResponse)
+def form_post(request: Request,
+              num: int = Form(...)
+              ):
+    result = f'Esto es una prueba de adivinación: {num}'
+    return templates.TemplateResponse(request=request,
+                                      name="form.html",
+                                      context={'result': result}
+                                      )
