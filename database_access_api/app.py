@@ -147,3 +147,37 @@ def form_post(request: Request,
                                       name="form.html",
                                       context={'result': result}
                                       )
+
+
+@app.get(path="/index",
+         response_class=HTMLResponse
+         )
+def index(request: Request):
+    return templates.TemplateResponse(request=request,
+                                      name="index.html",
+                                      #context={'result': result}
+                                      )
+
+
+@app.get(path="/admin",
+         response_class=HTMLResponse
+         )
+def index(request: Request):
+    return templates.TemplateResponse(request=request,
+                                      name="admin.html",
+                                      context={'result': ''}
+                                      )
+
+
+@app.post("/admin",
+          response_class=HTMLResponse)
+def form_post(request: Request,
+              user: str = Form(...),
+              password: str = Form(...),
+              ):
+    result = f'{user}: {password}'
+    return templates.TemplateResponse(request=request,
+                                      name="admin.html",
+                                      context={'result': result}
+                                      )
+
