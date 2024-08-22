@@ -194,17 +194,24 @@ def players_new(request: Request):
          response_class=HTMLResponse
          )
 def style(request: Request):
+    print(type(request))
     print(request)
     return templates.TemplateResponse(request=request,
                                       name="style.css"
                                       )
 
-@app.get(path="/navegador_players.js",
+@app.get(path="/navegacion",
          response_class=HTMLResponse
          )
 def navegacion(request: Request):
-    print(request)
     return templates.TemplateResponse(request=request,
                                       name="navegador_players.js"
                                       )
 
+@app.get(path="/acciones",
+         response_class=HTMLResponse
+         )
+def acciones(request: Request):
+    return templates.TemplateResponse(request=request,
+                                      name="acciones_new.js"
+                                      )
