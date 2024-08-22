@@ -66,7 +66,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-
+# Tested the access from the Notebooks.
 # Access to the players tables.
 @app.post('/new_player',
           tags=["LoadPlayers"]
@@ -117,7 +117,7 @@ async def get(incoming_data: Input,
     result = hosts.get(df, incoming_data.table)
     return result
 
-
+# Tested WEBSITE
 # Tested FORM
 @app.get('/')
 def read_root():
@@ -179,5 +179,15 @@ def form_post(request: Request,
     return templates.TemplateResponse(request=request,
                                       name="admin.html",
                                       context={'result': result}
+                                      )
+
+# Form to load the new players
+@app.get(path="/players",
+         response_class=HTMLResponse
+         )
+def players_new(request: Request):
+    return templates.TemplateResponse(request=request,
+                                      name="players_new.html",
+                                      #context={'result': result}
                                       )
 
