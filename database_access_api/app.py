@@ -205,6 +205,6 @@ def style(request: Request):
 def navegacion(request: Request):
     print(request)
     return templates.TemplateResponse(request=request,
-                                      name="navegador_player.js"
+                                      name="navegador_players.js"
                                       )
 
