@@ -187,7 +187,15 @@ def form_post(request: Request,
          )
 def players_new(request: Request):
     return templates.TemplateResponse(request=request,
-                                      name="players_new.html",
-                                      #context={'result': result}
+                                      name="players_new.html"
                                       )
+
+@app.get(path="/style.css",
+         response_class=HTMLResponse
+         )
+def players_new(request: Request):
+    return templates.TemplateResponse(request=request,
+                                      name="style.css"
+                                      )
+
 
