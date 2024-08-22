@@ -194,6 +194,7 @@ def players_new(request: Request):
          response_class=HTMLResponse
          )
 def players_new(request: Request):
+    print(request)
     return templates.TemplateResponse(request=request,
                                       name="style.css"
                                       )
