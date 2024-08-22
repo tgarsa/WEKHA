@@ -190,13 +190,21 @@ def players_new(request: Request):
                                       name="players_new.html"
                                       )
 
-@app.get(path="/style.css",
+@app.get(path="/style",
          response_class=HTMLResponse
          )
-def players_new(request: Request):
+def style(request: Request):
     print(request)
     return templates.TemplateResponse(request=request,
                                       name="style.css"
                                       )
 
+@app.get(path="/navegador_players.js",
+         response_class=HTMLResponse
+         )
+def navegacion(request: Request):
+    print(request)
+    return templates.TemplateResponse(request=request,
+                                      name="navegador_player.js"
+                                      )
 
