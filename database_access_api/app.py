@@ -215,3 +215,12 @@ def acciones(request: Request):
     return templates.TemplateResponse(request=request,
                                       name="acciones_new.js"
                                       )
+
+@app.get(path="/jinja",
+         response_class=HTMLResponse
+         )
+def jinja(request: Request):
+    return templates.TemplateResponse(request=request,
+                                      name="jinja.html",
+                                      context={"id": 345}
+                                      )
