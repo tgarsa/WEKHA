@@ -221,6 +221,6 @@ def acciones(request: Request):
          )
 def jinja(request: Request):
     return templates.TemplateResponse(request=request,
-                                      name="jinja.html",
+                                      name="Jinja.html",
                                       context={"id": 345}
                                       )
